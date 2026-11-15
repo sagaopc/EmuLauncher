@@ -1,5 +1,9 @@
 # Emu Launcher
 
+[![Baixar para Windows](https://img.shields.io/badge/Baixar_para_Windows-x64-A78BFA?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/sagaopc/EmuLauncher/releases/latest/download/EmuLauncher-windows-x64.zip)
+[![Versão mais recente](https://img.shields.io/github/v/release/sagaopc/EmuLauncher?style=for-the-badge&label=vers%C3%A3o&color=1F1F24)](https://github.com/sagaopc/EmuLauncher/releases/latest)
+[![Compilação](https://img.shields.io/github/actions/workflow/status/sagaopc/EmuLauncher/compilar.yml?branch=main&style=for-the-badge&label=compila%C3%A7%C3%A3o)](https://github.com/sagaopc/EmuLauncher/actions/workflows/compilar.yml)
+
 Launcher de emuladores para usar no sofá, com controle, numa televisão: baixa os emuladores,
 mantém atualizados e abre, tudo pelo mesmo lugar. É feito a partir do **Emulator Manager** (a busca
 de versões, a escolha do arquivo e a atualização segura são o mesmo código) e usa o visual do
@@ -12,8 +16,10 @@ Não tem biblioteca de jogos: ele abre os próprios emuladores.
 
 ## Download
 
-Baixe o `EmuLauncher-x.y.z-windows-x64.zip` mais recente em **[Releases](../../releases)**,
-descompacte e abra o `EmuLauncher.exe`. Não precisa instalar nada (Windows 10 e 11, 64 bits).
+**[Baixar a versão mais recente](https://github.com/sagaopc/EmuLauncher/releases/latest/download/EmuLauncher-windows-x64.zip)**
+(`EmuLauncher-windows-x64.zip`), descompactar e abrir o `EmuLauncher.exe`. Não precisa instalar
+nada (Windows 10 e 11, 64 bits). As versões anteriores e as notas de cada uma ficam em
+**[Releases](../../releases)**.
 
 O `.exe` é compilado pelo GitHub Actions a partir deste código a cada versão
 (`.github/workflows/compilar.yml`). Na primeira vez, o Windows pode mostrar "O Windows protegeu o

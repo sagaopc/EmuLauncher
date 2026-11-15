@@ -1,7 +1,8 @@
 # Compila o EmuLauncher.exe (Windows) e, se pedido, publica a release.
 # - A cada push: compila e guarda o .exe na execução (aba Actions), para teste.
 # - Actions > Compilar > Run workflow, informando a versão (ex.: 1.1.0): compila, cria a tag
-#   v<versão> e publica a release com as notas de docs/notas/v<versão>.md.
+#   v<versão> e publica a release com as notas de docs/notas/v<versão>.md. Se a versão já foi
+#   publicada, só acrescenta a cópia com nome fixo (EmuLauncher-windows-x64.zip), sem trocar o .exe.
 # - Enviar uma tag v* também compila e publica.
 name: Compilar
 
@@ -58,7 +59,12 @@ jobs:
           Copy-Item $exe, README.md, LICENSE -Destination pacote/EmuLauncher
           Copy-Item catalog.exemplo.json -Destination pacote/EmuLauncher
           Compress-Archive -Path pacote/EmuLauncher -DestinationPath "EmuLauncher-$env:VERSAO-windows-x64.zip"
-          "$((Get-FileHash "EmuLauncher-$env:VERSAO-windows-x64.zip" -Algorithm SHA256).Hash.ToLower())  EmuLauncher-$env:VERSAO-windows-x64.zip" | Out-File -FilePath SHA256SUMS.txt -Encoding ascii
+          # Mesmo arquivo com nome fixo: o link .../releases/latest/download/EmuLauncher-windows-x64.zip
+          # do README sempre baixa a versão mais recente.
+          Copy-Item "EmuLauncher-$env:VERSAO-windows-x64.zip" "EmuLauncher-windows-x64.zip"
+          Get-ChildItem EmuLauncher-*windows-x64.zip | ForEach-Object {
+            "$((Get-FileHash $_ -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+          } | Out-File -FilePath SHA256SUMS.txt -Encoding ascii
           Get-Content SHA256SUMS.txt
           "{0:N1} MB" -f ((Get-Item $exe).Length / 1MB)
 
@@ -76,6 +82,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "v$env:VERSAO"
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            # Versão já publicada: não troca o .exe dela. Só garante a cópia com nome fixo (para o
+            # link "versão mais recente" do README), feita a partir do arquivo que já está lá.
+            $versionado = "EmuLauncher-$env:VERSAO-windows-x64.zip"
+            New-Item -ItemType Directory -Force publicado | Out-Null
+            gh release download $tag --pattern $versionado --dir publicado --clobber
+            if ($LASTEXITCODE -ne 0) { throw "não achei $versionado na release $tag" }
+            Copy-Item "publicado/$versionado" "publicado/EmuLauncher-windows-x64.zip"
+            Get-ChildItem publicado/*.zip | Sort-Object Name -Descending | ForEach-Object {
+              "$((Get-FileHash $_ -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+            } | Out-File -FilePath publicado/SHA256SUMS.txt -Encoding ascii
+            Get-Content publicado/SHA256SUMS.txt
+            gh release upload $tag publicado/EmuLauncher-windows-x64.zip publicado/SHA256SUMS.txt --clobber
+            if ($LASTEXITCODE -ne 0) { throw "falhou o envio para a release $tag" }
+            exit 0
+          }
           $notas = "docs/notas/$tag.md"
           if (-not (Test-Path $notas)) { throw "faltam as notas da versão em $notas" }
-          gh release create $tag "EmuLauncher-$env:VERSAO-windows-x64.zip" SHA256SUMS.txt --target $env:GITHUB_SHA --title "Emu Launcher $env:VERSAO" --notes-file $notas
+          gh release create $tag "EmuLauncher-$env:VERSAO-windows-x64.zip" "EmuLauncher-windows-x64.zip" SHA256SUMS.txt --target $env:GITHUB_SHA --title "Emu Launcher $env:VERSAO" --notes-file $notas
