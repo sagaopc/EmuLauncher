@@ -1,0 +1,20 @@
+[
+  {
+    "Id": "meu-emulador",
+    "Name": "Meu Emulador",
+    "Platform": "Algum console",
+    "RepoUrl": "https://github.com/dono/repo",
+    "TagFilter": "",
+    "Exe": [ "meu-emulador.exe" ],
+    "Arguments": ""
+  },
+  {
+    "Id": "meu-emulador-testes",
+    "Name": "Meu Emulador · Actions",
+    "Platform": "Builds de teste",
+    "RepoUrl": "https://github.com/dono/repo/actions/workflows/build.yml",
+    "TagFilter": "main",
+    "Exe": [ "meu-emulador.exe" ],
+    "Arguments": ""
+  }
+]
